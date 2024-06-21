@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="it" dir="ltr">
+<head>
+    <meta charset="utf-8">
+    <title>Calcolatore di Bilancio</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f2f2f2;
+            color: #000000;
+            padding: 0;
+            margin: 0;
+            box-sizing: border-box;
+        }
+
+        .title {
+            background-color: #4CAF50;
+            color: white;
+            text-align: center;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 10px;
+            margin-left: -10px;
+
+        }
+
+        main {
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            background-color: #ffffff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+
+        fieldset {
+            margin-bottom: 20px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        legend {
+            font-weight: bold;
+            color: #000000;
+        }
+
+        label, select, input, output {
+            margin-bottom: 10px;
+            display: block;
+            width: 100%;
+        }
+
+        input, select {
+            padding: 5px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+            background-color: #ffffff;
+        }
+
+        output {
+            display: block;
+            padding: 5px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+            background-color: #f9f9f9;
+        }
+
+        button {
+            background-color: #f0f0f0;
+            color: #000000;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: 5px;
+            align-self: center;
+        }
+
+        button:hover {
+            background-color: #cccccc;
+        }
+
+        canvas {
+           margin: 0 auto;
+           display: block;
+       }
+       .photo-gallery {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .photo-gallery img {
+            max-width: 23%;
+            border-radius: 5px;
+        }
+
+
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        window.addEventListener('DOMContentLoaded', (event) => {
+            const formWidth = document.querySelector('form').offsetWidth;
+            document.querySelector('.title').style.width = `${formWidth}px`;
+        });
+
+        document.addEventListener('copy', function(e) {
+            e.preventDefault();
+        });
+
+        function calcola() {
+            const entrate = parseFloat(document.getElementById("E").value);
+            const cicloE = parseFloat(document.getElementById("CE").value);
+            const tasse = parseFloat(document.getElementById("T").value);
+            const situazioneAA = parseFloat(document.getElementById("SAA").value);
+            const welfare = parseFloat(document.getElementById("We").value);
+            const esercito = parseFloat(document.getElementById("EF").value);
+            const infrastrutture = parseFloat(document.getElementById("IF").value);
+            const burocrazia = parseFloat(document.getElementById("BC").value);
+            const evasione = parseFloat(document.getElementById("caz").value);
+            const bonus = parseFloat(document.getElementById("bonus").value) || 0;
+
+            const bilancio = entrate + entrate * ((situazioneAA + tasse + cicloE + evasione) / 100);
+            const spese = (welfare + esercito + infrastrutture + burocrazia) - bonus;
+            const saldo = bilancio - spese;
+
+            document.getElementById("Risultato").innerHTML = saldo.toFixed(2);
+
+            // Dati per il grafico
+            const labels = ['Welfare', 'Esercito', 'Infrastrutture', 'Burocrazia', 'Entrate'];
+            const data = [welfare, esercito, infrastrutture, burocrazia, saldo];
+            const colors = [
+                'rgba(255, 99, 132, 0.2)',
+                'rgba(54, 162, 235, 0.2)',
+                'rgba(255, 206, 86, 0.2)',
+                'rgba(75, 192, 192, 0.2)',
+                'rgba(153, 102, 255, 0.2)'
+            ];
+
+            // Rimuovi l'elemento canvas esistente se presente
+            const chartElement = document.getElementById('myChart');
+            if (chartElement) {
+                chartElement.remove();
+            }
+
+            // Crea un nuovo canvas per il grafico
+            const canvas = document.createElement('canvas');
+            canvas.id = 'myChart';
+            document.querySelector('main').appendChild(canvas);
+
+            // Crea il grafico a torta
+            const ctx = canvas.getContext('2d');
+            const myChart = new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        data: data,
+                        backgroundColor: colors,
+                        borderColor: colors,
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: false,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            display: false // Rimuove l'asse y
+                        },
+                        x: {
+                            display: false // Rimuove l'asse x
+                        }
+                    }
+                }
+            });
+        }
+    </script>
+</head>
+<body>
+    <main>
+        <div class="title">
+            <h1>Calcolatore di Bilancio</h1>
+        </div>
+        <form>
+          <div class="photo-gallery">
+              <img src="giolitti.png" alt="Photo 1">
+              <img src="andreotti.png" alt="Photo 2">
+              <img src="garibaldi.png" alt="Photo 3">
+              <img src="macedone.png" alt="Photo 4">
+          </div>
+            <fieldset>
+                <legend>Economia</legend>
+                <label for="E">Tipo di Economia</label>
+                <select id="E" name="Economia">
+                    <option value="6">Economia di Sussistenza (6p.)</option>
+                    <option value="9">Economia di Ricocostruzione (9p.)</option>
+                    <option value="12">Economia di Pre-bellica (12p.)</option>
+                    <option value="15">Economia di Avanzata (15p.)</option>
+                </select>
+                <!-- Altri campi del form -->
+                <label for="CE">Ciclo Economico</label>
+                <select id="CE" name="CicloEconomico">
+                    <option value="-20">Depressione (-20%)</option>
+                    <option value="-15">Recessione (-15%)</option>
+                    <option value="-10">Stagnante (-10%)</option>
+                    <option value="0">Crescita stabile (0%)</option>
+                    <option value="10">Solida crescita (10%)</option>
+                    <option value="15">Rapida crescita (15%)</option>
+                    <option value="20">Boom economico (20%)</option>
+                </select>
+
+                <label for="T">Tassazione</label>
+                <select id="T" name="Tassazione">
+                    <option value="-15">Ridotta (-15%)</option>
+                    <option value="-5">Leggermente ridotta (-5%)</option>
+                    <option value="0">Neutra (neutra)</option>
+                    <option value="5">Leggermente aumentata (+5%)</option>
+                    <option value="15">Aumentata (+15%)</option>
+                </select>
+
+                <label for="SAA">Situazione Agricola ed Alimentare</label>
+                <select id="SAA" name="SituazioneAgricola">
+                    <option value="-20">Carestia (-20%)</option>
+                    <option value="-10">Insufficienza (-10%)</option>
+                    <option value="0">Equilibrio (Neutro)</option>
+                    <option value="7.5">Discreto Surplus (7.5%)</option>
+                    <option value="15">Grande surplus (+15%)</option>
+                </select>
+            </fieldset>
+
+            <fieldset>
+                <legend>Spese Regolari</legend>
+                <label for="We">Servizi/Welfare</label>
+                <select id="We" name="Welfare">
+                    <option value="0.5">Minimalista (0.5 p.)</option>
+                    <option value="2">Minimo (2 p.)</option>
+                    <option value="3">Adeguato (3 p.)</option>
+                    <option value="5">Welfare State (5 p.)</option>
+                </select>
+
+                <label for="EF">Esercito e Forze dell'Ordine</label>
+                <select id="EF" name="EsercitoForze">
+                    <option value="0.5">Nulla (0.5 p.)</option>
+                    <option value="1">Minimo (1 p.)</option>
+                    <option value="2">Mediocre (2 p.)</option>
+                    <option value="3">Adeguato (3 p.)</option>
+                    <option value="5">Abbondante (5 p.)</option>
+                    <option value="8">Stato di guerra (8 p.)</option>
+                </select>
+
+                <label for="IF">Infrastrutture</label>
+                <select id="IF" name="Infrastrutture">
+                    <option value="0.5">Nullo (0.5 p.)</option>
+                    <option value="1">Minimo (1 p.)</option>
+                    <option value="2">Adeguato (2 p.)</option>
+                    <option value="3.5">Avanzato (3.5 p.)</option>
+                </select>
+
+                <label for="BC">Burocrazia</label>
+                <select id="BC" name="Burocrazia">
+                    <option value="0.25">Minima (0.25 p.)</option>
+                    <option value="0.5">Adeguata (0.5 p.)</option>
+                    <option value="1">Abbondante (1 p.)</option>
+                </select>
+            </fieldset>
+
+            <fieldset>
+                <legend>Dati vari</legend>
+                <label for="caz">Criminalità/Evasione Fiscale</label>
+                <select id="caz" name="Evasione">
+                    <option value="0">Molto bassa (0%)</option>
+                    <option value="-3">Bassa (-3%)</option>
+                    <option value="-6">Media (-6%)</option>
+                    <option value="-10">Alta (-10%)</option>
+                </select>
+
+                <label for="bonus">Bonus</label>
+                <input type="number" id="bonus" name="bonus" value="0">
+
+
+            </fieldset>
+            <button type="button" onclick="calcola()">Calcola</button>
+            <output id="Risultato">Risultato</output>
+        </form>
+    </main>
+</body>
+</html>
